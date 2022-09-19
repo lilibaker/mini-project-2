@@ -1,5 +1,6 @@
 #include <Servo.h>
 
+
 // servo 1 = up and down
 Servo servoV;
 // servo 2 = left and right
@@ -35,13 +36,13 @@ void setup() {
   pinMode(buttonPin, INPUT);
   
   // Attach interrupt function that is called when button pin state goes from LOW to HIGH
-  attachInterrupt(digitalPinToInterrupt(buttonPin), onButtonPress, RISING);
+//  attachInterrupt(digitalPinToInterrupt(buttonPin), onButtonPress, RISING);
 
   resetServos();
 }
 
 void loop() {
-  
+  onButtonPress();
 }
 
 void onButtonPress() {
