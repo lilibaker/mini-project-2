@@ -1,6 +1,5 @@
 #include <Servo.h>
 
-
 // servo 1 = up and down
 Servo servoV;
 // servo 2 = left and right
@@ -21,8 +20,6 @@ const int buttonPin = 8;
 
 const int PAN_DELAY = 200;
 
-int distance = 0;
-
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
@@ -36,7 +33,7 @@ void setup() {
   pinMode(buttonPin, INPUT);
   
   // Attach interrupt function that is called when button pin state goes from LOW to HIGH
-//  attachInterrupt(digitalPinToInterrupt(buttonPin), onButtonPress, RISING);
+  attachInterrupt(digitalPinToInterrupt(buttonPin), onButtonPress, RISING);
 
   resetServos();
 }
@@ -47,24 +44,25 @@ void loop() {
 
 void onButtonPress() {
   resetServos();
-  Serial.println("Start scanning");
+  Serial.println("----- BEGIN CSV -----");
+  Serial.println("x,y,scan");
   // for loop up and down
   for (servoV_pos = 0; servoV_pos <= SERVO_MAX; servoV_pos = servoV_pos + servo_unit_of_distance) {
     // for loop left and right
     for (servoH_pos = 0; servoH_pos <= SERVO_MAX; servoH_pos = servoH_pos + servo_unit_of_distance) {
-      scan();
       writeToServos();
+      scan();
       delay(PAN_DELAY);
     }
   }
-  Serial.println("Finished scanning");
+  Serial.println("----- END CSV -----");
 }
 
 void writeToServos() {
-  Serial.print("Current pos: x ");
   Serial.print(servoH_pos);
-  Serial.print(", y ");
+  Serial.print(",");
   Serial.println(servoV_pos);
+  Serial.print(",");
   
   servoV.write(servoV_pos);
   servoH.write(servoH_pos);
