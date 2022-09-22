@@ -17,13 +17,15 @@ const int sensorPin = A0;
 const int servoPin1 = 9;
 const int servoPin2 = 10;
 const int buttonPin = 8;
+int lastButtonState = 0;
+long lastInterruptTime = 0;
 
 const int PAN_DELAY = 200;
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
-  Serial.println("Sketch starting...");
+  //Serial.println("Sketch starting...");
   
   // Set up servos
   servoV.attach(servoPin1);
@@ -39,13 +41,28 @@ void setup() {
 }
 
 void loop() {
-  onButtonPress();
+  int currentButtonState = digitalRead(buttonPin);
+  if (lastButtonState == 0 && currentButtonState == 1) {
+    // get time of current interrupt
+    long interruptTime = millis();
+  
+    // if time since last interrupt is greater than arbitrary threshold
+    // then button was pressed
+    if (interruptTime - lastInterruptTime >  200) {
+        onButtonPress();
+    }
+    
+    // set last interrupt time
+    lastInterruptTime = interruptTime; 
+  }
+  lastButtonState = currentButtonState;
+  
 }
 
 void onButtonPress() {
   resetServos();
-  Serial.println("----- BEGIN CSV -----");
-  Serial.println("x,y,scan");
+  //Serial.println("----- BEGIN CSV -----");
+  //Serial.println("x,y,scan");
   // for loop up and down
   for (servoV_pos = 0; servoV_pos <= SERVO_MAX; servoV_pos = servoV_pos + servo_unit_of_distance) {
     // for loop left and right
@@ -55,21 +72,17 @@ void onButtonPress() {
       delay(PAN_DELAY);
     }
   }
-  Serial.println("----- END CSV -----");
+  //Serial.println("----- END CSV -----");
 }
 
 void writeToServos() {
-  Serial.print(servoH_pos);
-  Serial.print(",");
-  Serial.println(servoV_pos);
-  Serial.print(",");
-  
+   
   servoV.write(servoV_pos);
   servoH.write(servoH_pos);
 }
 
 void resetServos() {
-  Serial.println("Reset servos");
+  //Serial.println("Reset servos");
   servoV_pos = 0;
   servoH_pos = 0;
   writeToServos();
@@ -78,5 +91,9 @@ void resetServos() {
 void scan(){
   float rawDistance = analogRead(sensorPin);
   float convertedDistance = 29.988 * pow(rawDistance, -1.173) * 100; // in cm
+  Serial.print(servoH_pos);
+  Serial.print(",");
+  Serial.print(servoV_pos);
+  Serial.print(",");
   Serial.println(convertedDistance);
 }
