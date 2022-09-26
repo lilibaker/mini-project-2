@@ -5,12 +5,15 @@ Servo servoV;
 // servo 2 = left and right
 Servo servoH;
 
-int servoV_pos = 0; // 0 to 180
+int servoV_pos = 20; // 0 to 180
 int servoH_pos = 0; // 0 to 180
 
-int servo_unit_of_distance = 18;
+int servo_unit_of_distance = 1;
 
-const int SERVO_MAX = 180; // defined by servo/arduino
+const int SERVO_MAX_V = 60;
+const int SERVO_MIN_V = 20;
+const int SERVO_MAX_H = 50;
+const int SERVO_MIN_H = 0;
 
 // pin definitions
 const int sensorPin = A0;
@@ -64,9 +67,9 @@ void onButtonPress() {
   //Serial.println("----- BEGIN CSV -----");
   //Serial.println("x,y,scan");
   // for loop up and down
-  for (servoV_pos = 0; servoV_pos <= SERVO_MAX; servoV_pos = servoV_pos + servo_unit_of_distance) {
+  for (servoV_pos = SERVO_MIN_V; servoV_pos <= SERVO_MAX_V; servoV_pos = servoV_pos + servo_unit_of_distance) {
     // for loop left and right
-    for (servoH_pos = 0; servoH_pos <= SERVO_MAX; servoH_pos = servoH_pos + servo_unit_of_distance) {
+    for (servoH_pos = SERVO_MIN_H; servoH_pos <= SERVO_MAX_H; servoH_pos = servoH_pos + servo_unit_of_distance) {
       writeToServos();
       scan();
       delay(PAN_DELAY);
